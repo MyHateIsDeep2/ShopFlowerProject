@@ -25,18 +25,35 @@ app.get('/getBiljke', (request, response) => {
     })
 });
 
-app.post('/addtocart/:id_biljke/:id_korisnika', (req, res) => {
-    const id_biljke = req.params.id_biljke;
-    const id_korisnika = req.params.id_korisnika;
-    const { kolicina } = req.body; // quantity sent from frontend
+app.post('/addtocart/:biljka_id/:korisnik_id', (req, res) => {
+    const id_biljke = req.params.biljka_id;
+    const id_korisnika = req.params.korisnik_id;
+    const kolicina = 1;
 
-    conn.query(
-        "INSERT INTO `Cart`(`korisnik_id`, `produkt_id`, `kolicina`) VALUES (?,?,?)",
-        [id_korisnika, id_biljke, kolicina],
+    conn.query("INSERT INTO `bCart`(`korisnik_id`, `biljka_id`, `kolicina`) VALUES (?,?,1)", [id_korisnika, id_biljke],
         (error, results) => {
             if (error) console.log(error);
             return res.send(results);
         }
     );
+});
+app.post('/login', (request, response) => {
+    const data = request.body;
+    console.log(data.Email);
+    console.log(data.Lozinka);
+    Korisnik = [data.ID, data.Email, data.Lozinka]
+    conn.query("INSERT INTO bKorisnici (korisnik_id, email, korisnik_password) VALUES (?, ?, ?)", Korisnik, (error, results ) => {
+        if (error) {
+            console.log(error)
+        }
+        return response.send(results);
+    })
+})
+app.get('/hello', (request, response) => {
+    return response.send('Hello world');
+});
+
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
 });
 
