@@ -25,6 +25,16 @@ app.get('/getBiljke', (request, response) => {
     })
 });
 
+app.get('/getCart/:korisnik_id', (request, response) => {
+    const korisnik_id = req.params.korisnik_id;
+    conn.query("SELECT bBiljke.biljka_ime, bBiljke.cijena, bCart.kolicina, (bBiljke.cijena * bCart.kolicina) AS ukupno FROM bCart JOIN bBiljke ON bCart.produkt_id = bBiljke.biljka_id WHERE bCart.id_korisnik = ?", (error, results) => {
+        if (error) {
+            console.log(error)
+        }
+        return response.send(results);
+    })
+})
+
 app.post('/addtocart/:biljka_id/:korisnik_id', (req, res) => {
     const id_biljke = req.params.biljka_id;
     const id_korisnika = req.params.korisnik_id;
@@ -41,14 +51,15 @@ app.post('/login', (request, response) => {
     const data = request.body;
     console.log(data.Email);
     console.log(data.Lozinka);
-    Korisnik = [data.ID, data.Email, data.Lozinka]
-    conn.query("INSERT INTO bKorisnici (korisnik_id, email, korisnik_password) VALUES (?, ?, ?)", Korisnik, (error, results ) => {
+    Korisnik = [data.Email, data.Lozinka]
+    conn.query("INSERT INTO bKorisnici (email, korisnik_password) VALUES (?, ?)", Korisnik, (error, results ) => {
         if (error) {
             console.log(error)
+            return response.status(500).send(error);
         }
-        return response.send(results);
-    })
-})
+        response.send({korisnik_id: results.insertId})
+    });
+});
 app.get('/hello', (request, response) => {
     return response.send('Hello world');
 });
