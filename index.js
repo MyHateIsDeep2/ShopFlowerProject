@@ -63,14 +63,34 @@ app.post('/login', (request, response) => {
     );
 });
 
+//app.get('/getCart/:korisnik_id', (request, response) => {
+  //  const korisnik_id = request.params.korisnik_id;
+    //conn.query("SELECT bCart.produkt_id, bCart.id_korisnik, bCart.kolicina, bBiljke.biljka_ime, bBiljke.cijena, bBiljke.slika, bBiljke.opis, (bBiljke.cijena * bCart.kolicina) AS Ukupno FROM bCart JOIN bBiljke ON bCart.produkt_id = bBiljke.biljka_id WHERE bCart.id_korisnik = ?"), [korisnik_id], (error, results) => {
+      //  if (error) {
+        //    console.log(error)
+        //}
+        //return response.send(results);
+    //}
+//});
 app.get('/getCart/:korisnik_id', (request, response) => {
     const korisnik_id = request.params.korisnik_id;
-    conn.query("SELECT bCart.produkt_id, bCart.id_korisnik, bCart.kolicina, bBiljke.biljka_ime, bBiljke.cijena, bBiljke.slika, bBiljke.opis, (bBiljke.cijena * bCart.kolicina) AS Ukupno FROM bCart JOIN bBiljke ON bCart.produkt_id = bBiljke.biljka_id WHERE bCart.id_korisnik = ?"), [korisnik_id], (error, results) => {
-        if (error) {
-            console.log(error)
+
+    conn.query(
+        "SELECT bCart.produkt_id, bCart.id_korisnik, bCart.kolicina, " +
+        "bBiljke.biljka_ime, bBiljke.cijena, bBiljke.slika, bBiljke.opis, " +
+        "(bBiljke.cijena * bCart.kolicina) AS Ukupno " +
+        "FROM bCart " +
+        "JOIN bBiljke ON bCart.produkt_id = bBiljke.biljka_id " +
+        "WHERE bCart.id_korisnik = ?",
+        [korisnik_id],
+        (error, results) => {
+            if (error) {
+                console.log(error);
+                return response.status(500).send(error);
+            }
+            response.send(results);
         }
-        return response.send(results);
-    }
+    );
 });
 
 app.post('/addtocart/:korisnik_id/:biljka_id', (request, response) => {
